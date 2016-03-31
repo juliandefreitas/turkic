@@ -143,7 +143,7 @@ class Server(object):
                     self.disable(hitid)
                 except CommunicationError:
                     pass
-            print "Next page"
+            print("Next page")
 
     def accept(self, assignmentid, feedback = ""):
         """

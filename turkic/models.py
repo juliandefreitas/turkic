@@ -203,7 +203,7 @@ class HIT(database.Base):
         try:
           api.server.reject(self.assignmentid, reason)
         except:
-          print "Failed to reject {0}".format(self.assignmentid)
+          print ("Failed to reject {0}".format(self.assignmentid))
         self.accepted = False
         self.compensated = True
         self.worker.numrejections += 1

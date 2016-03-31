@@ -141,7 +141,7 @@ def main(args = None):
         try:
            handler = handlers[args[0]][0]
         except KeyError:
-            print "Error: Unknown action {0}".format(args[0])
+            print ("Error: Unknown action {0}".format(args[0]))
         else:
             try:
                 handler(args[1:])
@@ -154,7 +154,7 @@ def help(args = None):
     Print the help information.
     """
     for action, (_, help) in sorted(handlers.items()):
-        print "{0:>15}   {1:<50}".format(action, help)
+        print ("{0:>15}   {1:<50}".format(action, help))
 
 class init(Command):
     def setup(self):
@@ -167,7 +167,7 @@ class init(Command):
         target = os.getcwd() + "/" + args.name
 
         if os.path.exists(target):
-            print "{0} already exists".format(target)
+            print ("{0} already exists".format(target))
             return
 
         shutil.copytree(skeleton, target);
@@ -178,7 +178,7 @@ class init(Command):
         public = os.path.dirname(__file__) + "/public"
         os.symlink(public, target + "/public/turkic")
 
-        print "Initialized new project: {0}".format(args.name);
+        print ("Initialized new project: {0}".format(args.name))
 
 class status(Command):
     def setup(self):
@@ -188,20 +188,20 @@ class status(Command):
         return parser
 
     def serverconfig(self, session):
-        print "Configuration:"
-        print "  Sandbox:     {0}".format("True" if config.sandbox else "False")
-        print "  Database:    {0}".format(config.database)
-        print "  Localhost:   {0}".format(config.localhost)
-        print ""
+        print ("Configuration:")
+        print ("  Sandbox:     {0}".format("True" if config.sandbox else "False"))
+        print ("  Database:    {0}".format(config.database))
+        print ("  Localhost:   {0}".format(config.localhost))
+        print ("")
 
     def turkstatus(self, session):
-        print "Mechanical Turk Status:"
-        print "  Balance:     ${0:.2f}".format(api.server.balance)
-        print "  Net Payout:  ${0:.2f}".format(api.server.rewardpayout)
-        print "  Net Fees:    ${0:.2f}".format(api.server.feepayout)
-        print "  Num Created: {0}".format(api.server.numcreated)
-        print "  Approved:    {0:.2f}%".format(api.server.approvalpercentage)
-        print ""
+        print ("Mechanical Turk Status:")
+        print ("  Balance:     ${0:.2f}".format(api.server.balance))
+        print ("  Net Payout:  ${0:.2f}".format(api.server.rewardpayout))
+        print ("  Net Fees:    ${0:.2f}".format(api.server.feepayout))
+        print ("  Num Created: {0}".format(api.server.numcreated))
+        print ("  Approved:    {0:.2f}%".format(api.server.approvalpercentage))
+        print ("")
 
     def serverstatus(self, session):
         available = session.query(HIT).filter(HIT.ready == True).count()
@@ -210,63 +210,63 @@ class status(Command):
         compensated = session.query(HIT).filter(HIT.compensated == True).count()
         remaining = published - completed
 
-        print "Status:"
-        print "  Available:   {0}".format(available)
-        print "  Published:   {0}".format(published)
-        print "  Completed:   {0}".format(completed)
-        print "  Compensated: {0}".format(compensated)
-        print "  Remaining:   {0}".format(remaining)
-        print ""
+        print ("Status:")
+        print ("  Available:   {0}".format(available))
+        print ("  Published:   {0}".format(published))
+        print ("  Completed:   {0}".format(completed))
+        print ("  Compensated: {0}".format(compensated))
+        print ("  Remaining:   {0}".format(remaining))
+        print ("")
 
         if remaining > 0:
-            print "Server is ONLINE and accepting work!"
+            print ("Server is ONLINE and accepting work!")
         else:
             if compensated == completed:
-                print "Server is offline."
+                print ("Server is offline.")
             else:
-                print "Server is offline, but some workers are not compensated."
+                print ("Server is offline, but some workers are not compensated.")
 
     def verify(self, session):
         passed = True
 
-        print "Testing access to Amazon Mechanical Turk...",
+        print ("Testing access to Amazon Mechanical Turk...",)
         try:
             balance = api.server.balance
         except Exception as e:
-            print "ERROR!", e
+            print ("ERROR!", e)
             passed = False
         else:
-            print "OK"
+            print ("OK")
 
-        print "Testing access to database server...",
+        print ("Testing access to database server...",)
         try:
             count = session.query(HIT).count()
         except Exception as e:
-            print "ERROR!", e
+            print ("ERROR!", e)
             passed = False
-        print "OK"
+        print ("OK")
 
-        print "Testing access to web server...",
+        print ("Testing access to web server...",)
         try:
             da = urllib2.urlopen(
                     "{0}/turkic/verify.html".format(config.localhost))
             da = da.read().strip()
             if da == "1":
-                print "OK"
+                print ("OK")
             else:
-                print "ERROR!",
-                print "GOT RESPONSE, BUT INVALID"
-                print da
+                print ("ERROR!",)
+                print ("GOT RESPONSE, BUT INVALID")
+                print (da)
                 passed = False
         except Exception as e:
-            print "ERROR!", e
+            print ("ERROR!", e)
             passed = False
 
-        print ""
+        print ("")
         if passed:
-            print "All tests passed!"
+            print ("All tests passed!")
         else:
-            print "One or more tests FAILED!"
+            print ("One or more tests FAILED!")
 
     def __call__(self, args):
         session = database.connect()
@@ -298,7 +298,7 @@ class publish(Command):
             query = query.filter(HIT.ready == True)
             if args.disable:
                 if args.offline:
-                    print "Cannot disable offline HITs."
+                    print ("Cannot disable offline HITs.")
                     return
                 query = query.filter(HIT.published == True)
                 query = query.filter(HIT.completed == False)
@@ -308,10 +308,10 @@ class publish(Command):
                 for hit in query:
                     try:
                         hitid = hit.disable()
-                        print "Disabled {0}".format(hitid)
+                        print ("Disabled {0}".format(hitid))
                     except Exception as e:
-                        print "Unable to disable HIT {0}!".format(hit.hitid)
-                        print e
+                        print ("Unable to disable HIT {0}!".format(hit.hitid))
+                        print (e)
                     session.add(hit)
             else:
                 query = query.filter(HIT.published == False)
@@ -320,10 +320,10 @@ class publish(Command):
 
                 for hit in query:
                     if args.offline:
-                        print hit.offlineurl(config.localhost)
+                        print (hit.offlineurl(config.localhost))
                     else:
                         hit.publish()
-                        print "Published {0}".format(hit.hitid)
+                        print ("Published {0}".format(hit.hitid))
                         session.add(hit)
                         session.commit()
         finally:
@@ -389,21 +389,21 @@ class compensate(Command):
 
             for hit in query:
                 if not hit.check():
-                    print "WARNING: {0} failed payment check, ignoring".format(hit.hitid)
+                    print ("WARNING: {0} failed payment check, ignoring".format(hit.hitid))
                     continue
                 try:
                     self.process(hit, acceptkeys, rejectkeys, warnkeys,
                         args.validated, args.default)
                     if hit.compensated:
                         if hit.accepted:
-                            print "Accepted HIT {0}".format(hit.hitid)
+                            print ("Accepted HIT {0}".format(hit.hitid))
                         else:
-                            print "Rejected HIT {0}".format(hit.hitid)
+                            print ("Rejected HIT {0}".format(hit.hitid))
                         session.add(hit)
                 except CommunicationError as e:
                     hit.compensated = True
                     session.add(hit)
-                    print "Error with HIT {0}: {1}".format(hit.hitid, e)
+                    print ("Error with HIT {0}: {1}".format(hit.hitid, e))
         finally:
             session.commit()
             session.close()
@@ -412,7 +412,7 @@ class donation(Command):
     def __call__(self, args):
         hits = session.query(HIT).filter(HIT.donatedamount > 0)
         for hit in hits:
-            print hit.workerid, hit.timeonserver, hit.donatedamount
+            print (hit.workerid, hit.timeonserver, hit.donatedamount)
 
 class setup(Command):
     def setup(self):
@@ -436,7 +436,7 @@ class setup(Command):
         #    print "\timport config, turkic.api"
         #    print "\tturkic.api.server.purge()"
         database.reinstall()
-        print "Database reset!"
+        print ("Database reset!")
 
     def database(self, args):
         import turkic.models
@@ -450,10 +450,10 @@ class setup(Command):
                 if resp in ["yes", "y"]:
                     self.resetdatabase()
                 else:
-                    print "Aborted. No changes to database."
+                    print ("Aborted. No changes to database.")
         else:
             database.install()
-            print "Installed new tables, if any."
+            print ("Installed new tables, if any.")
 
     def __call__(self, args):
         if args.public_symlink:
@@ -462,9 +462,9 @@ class setup(Command):
             try:
                 os.symlink(public, target)
             except OSError:
-                print "Could not create symlink!"
+                print ("Could not create symlink!")
             else:
-                print "Created symblink {0} to {1}".format(public, target)
+                print ("Created symblink {0} to {1}".format(public, target))
                 
         if args.database:
             self.database(args)
@@ -488,11 +488,11 @@ class invalidate(Command):
         else:
             worker = session.query(Worker).get(args.id)
             if not worker:
-                print "Worker \"{0}\" not found".format(args.id)
+                print ("Worker \"{0}\" not found".format(args.id))
                 return
             if not args.no_block:
                 worker.block("HIT was invalid.")
-                print "Blocked worker \"{0}\"".format(args.id)
+                print ("Blocked worker \"{0}\"".format(args.id))
                 session.add(worker)
 
             query = query.filter(HIT.workerid == args.id)
@@ -500,7 +500,7 @@ class invalidate(Command):
         for hit in query:
             replacement = hit.invalidate() 
             session.add(hit)
-            print "Invalidated {0}".format(hit.hitid)
+            print ("Invalidated {0}".format(hit.hitid))
 
             if replacement:
                 session.add(replacement)
@@ -508,7 +508,7 @@ class invalidate(Command):
                     session.commit()
                     replacement.publish()
                     session.add(replacement)
-                    print "Respawned with {0}".format(replacement.hitid)
+                    print ("Respawned with {0}".format(replacement.hitid))
         session.commit()
 
 class workers(Command):
@@ -534,7 +534,7 @@ class workers(Command):
                 worker.donatedamount = data[5]
                 worker.bonusamount = data[6]
                 worker.verified = data[7]
-                print "Loaded {0}".format(worker.id)
+                print ("Loaded {0}".format(worker.id))
                 session.add(worker)
             session.commit()
         elif args.dump:
@@ -548,45 +548,45 @@ class workers(Command):
                              worker.donatedamount,
                              worker.bonusamount,
                              worker.verified))
-                print "Dumped {0}".format(worker.id)
+                print ("Dumped {0}".format(worker.id))
             pickle.dump(data, open(args.dump, "w"))
         elif args.block:
             worker = Worker.lookup(args.block)
             worker.block("Poor quality work.")
             session.add(worker)
             session.commit()
-            print "Blocked {0}".format(args.block)
+            print ("Blocked {0}".format(args.block))
         elif args.unblock:
             worker = Worker.lookup(args.unblock)
             worker.unblock("Continue working.")
             session.add(worker)
             session.commit()
-            print "Unblocked {0}".format(args.unblock)
+            print ("Unblocked {0}".format(args.unblock))
         elif args.search:
             query = session.query(Worker)
             query = query.filter(Worker.id.like(args.search + "%"))
             if query.count():
-                print "Matches:"
+                print ("Matches:")
                 for worker in query:
-                    print worker.id
+                    print (worker.id)
             else:
-                print "No matches."
+                print ("No matches.")
         elif args.summary:
             query = session.query(Worker)
             query = query.filter(Worker.id == args.summary)
             if query.count():
                 worker = query.one()
-                print "Submitted: {0}".format(worker.numsubmitted)
-                print "Accepted: {0}".format(worker.numacceptances)
-                print "Rejected: {0}".format(worker.numrejections)
-                print "Bonuses: {0}".format(worker.bonusamount)
-                print "Donated: {0}".format(worker.donatedamount)
-                print "Verified: {0}".format(worker.verified)
-                print "Blocked: {0}".format(worker.blocked)
+                print ("Submitted: {0}".format(worker.numsubmitted))
+                print ("Accepted: {0}".format(worker.numacceptances))
+                print ("Rejected: {0}".format(worker.numrejections))
+                print ("Bonuses: {0}".format(worker.bonusamount))
+                print ("Donated: {0}".format(worker.donatedamount))
+                print ("Verified: {0}".format(worker.verified))
+                print ("Blocked: {0}".format(worker.blocked))
                 if args.location:
-                    print "Locations: {0}".format(", ".join(set(x.country for x in worker.locations)))
+                    print ("Locations: {0}".format(", ".join(set(x.country for x in worker.locations))))
             else:
-                print "No matches."
+                print ("No matches.")
         else:
             workers = session.query(Worker)
             workers = workers.order_by(Worker.numacceptances)
@@ -605,7 +605,7 @@ class workers(Command):
                         worker.numacceptances,
                         worker.numrejections,
                         extra)
-                print "{0:<15} {1:>5} jobs {2:>5} acc {3:>5} rej     {4}".format(*data)
+                print ("{0:<15} {1:>5} jobs {2:>5} acc {3:>5} rej     {4}".format(*data))
 
 class email(Command):
     def setup(self):
@@ -619,24 +619,24 @@ class email(Command):
     def __call__(self, args):
         message = open(args.message).read()
 
-        print "To: {0}".format(args.workerid)
-        print "Subject: {0}".format(args.subject)
-        print ""
-        print message
-        print ""
+        print ("To: {0}".format(args.workerid))
+        print ("Subject: {0}".format(args.subject))
+        print ("")
+        print (message)
+        print ("")
 
         if not args.no_confirm:
-            print ""
+            print ("")
             resp = raw_input("Send? ").lower()
             if resp not in ["yes", "y"]:
-                print "Aborted!"
+                print ("Aborted!")
                 return
 
-        print "Sending..."
+        print ("Sending...")
 
         api.server.email(args.workerid, args.subject, message)
 
-        print "Message sent!"
+        print ("Message sent!")
 
 try:
     import config
